@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { counterSlice } from './contactsSlice';
 import {
-  persistStore,
   FLUSH,
   REHYDRATE,
   PAUSE,
@@ -9,11 +9,9 @@ import {
   REGISTER,
 } from 'redux-persist';
 
-import { persistedReducer } from './contactsSlice';
-
 export const store = configureStore({
   reducer: {
-    phoneBook: persistedReducer,
+    phoneBook: counterSlice.reducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
@@ -22,5 +20,3 @@ export const store = configureStore({
       },
     }),
 });
-
-export let persistor = persistStore(store);

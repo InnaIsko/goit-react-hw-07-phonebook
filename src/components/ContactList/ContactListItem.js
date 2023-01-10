@@ -1,17 +1,23 @@
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
-import { deliteContact } from 'redux/contactsSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { Contact, BtnDelite, ContactItem } from './ContactListItem.styled';
+import { deleteContact } from 'redux/operations';
+import { selectIsLoading } from 'redux/selectors';
 
 export function ContactListItem({ onContactInfo }) {
   const dispatch = useDispatch();
+  const isLoading = useSelector(selectIsLoading);
+
   return (
     <ContactItem>
       <Contact>
-        {onContactInfo.name}: {onContactInfo.number}
+        {onContactInfo.name}: {onContactInfo.phone}
       </Contact>
-      <BtnDelite onClick={() => dispatch(deliteContact(onContactInfo.id))}>
-        Delete
+      <BtnDelite
+        disabled={isLoading}
+        onClick={() => dispatch(deleteContact(onContactInfo.id))}
+      >
+        {isLoading ? 'Delete...' : 'Delete'}
       </BtnDelite>
     </ContactItem>
   );
@@ -19,7 +25,7 @@ export function ContactListItem({ onContactInfo }) {
 ContactListItem.propTypes = {
   onContactInfo: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    number: PropTypes.string.isRequired,
+    phone: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
   }),
 };

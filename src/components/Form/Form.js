@@ -1,16 +1,19 @@
-import { useState } from 'react';
 import { Box } from 'components/Box';
 import { nanoid } from 'nanoid';
+
+import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addContact, getContactsValue } from 'redux/contactsSlice';
+import { selectContacts } from 'redux/selectors';
+import { addContacts } from 'redux/operations';
+
 import { Input, Label, BtnForm } from './Form. styled';
 
 export function ContactForm() {
-  const contacts = useSelector(getContactsValue);
+  const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
 
   const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+  const [phone, setPhone] = useState('');
 
   const getInputValue = event => {
     switch (event.currentTarget.name) {
@@ -18,8 +21,8 @@ export function ContactForm() {
         setName(event.currentTarget.value);
         break;
 
-      case 'number':
-        setNumber(event.currentTarget.value);
+      case 'phone':
+        setPhone(event.currentTarget.value);
         break;
 
       default:
@@ -35,10 +38,11 @@ export function ContactForm() {
     if (nameValue) {
       alert(`${name} is olredi in contacts`);
     } else {
-      dispatch(addContact({ name, number, id: nanoid() }));
+      dispatch(addContacts({ name, phone, id: nanoid() }));
     }
+
     setName('');
-    setNumber('');
+    setPhone('');
   };
 
   return (
@@ -65,11 +69,11 @@ export function ContactForm() {
         Number
         <Input
           type="tel"
-          name="number"
+          name="phone"
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
           required
-          value={number}
+          value={phone}
           onChange={getInputValue}
         />
       </Label>

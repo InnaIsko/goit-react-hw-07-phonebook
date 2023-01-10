@@ -1,46 +1,59 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-
-const persistConfig = {
-  key: 'contacts',
-  storage,
-};
+import { fetchContacts, addContacts, deleteContact } from './operations';
 
 const initialState = {
   contacts: {
     items: [],
-    filter: '',
+    isLoading: false,
+    error: null,
   },
+  filter: '',
 };
 
-const counterSlice = createSlice({
+const handlePending = state => {
+  state.contacts.isLoading = true;
+};
+const handleRejected = (state, action) => {
+  state.contacts.isLoading = false;
+  state.contacts.error = action.payload;
+};
+
+export const counterSlice = createSlice({
   name: 'phoneBook',
   initialState,
   reducers: {
-    addContact(state, action) {
+    getValue(state, action) {
+      state.filter = action.payload;
+    },
+  },
+  extraReducers: {
+    //========fetchContacts
+    [fetchContacts.pending]: handlePending,
+    [fetchContacts.rejected]: handleRejected,
+    [fetchContacts.fulfilled](state, action) {
+      state.contacts.isLoading = false;
+      state.contacts.error = null;
+      state.contacts.items = action.payload;
+    },
+    //========addContacts
+    [addContacts.pending]: handlePending,
+    [addContacts.rejected]: handleRejected,
+    [addContacts.fulfilled](state, action) {
+      state.contacts.isLoading = false;
+      state.contacts.error = null;
       state.contacts.items.push(action.payload);
     },
-    deliteContact(state, action) {
-      // state.contacts.items.filter(elem => elem.id !== action.payload);
+    //========deleteContact
+    [deleteContact.pending]: handlePending,
+    [deleteContact.rejected]: handleRejected,
+    [deleteContact.fulfilled](state, action) {
+      state.contacts.isLoading = false;
+      state.contacts.error = null;
       const index = state.contacts.items.findIndex(
-        contact => contact.id === action.payload
+        contact => contact.id === action.payload.id
       );
       state.contacts.items.splice(index, 1);
     },
-    getValue(state, action) {
-      state.contacts.filter = action.payload;
-    },
   },
 });
-
-export const { addContact, deliteContact, filterContacts, getValue } =
-  counterSlice.actions;
-
-export const persistedReducer = persistReducer(
-  persistConfig,
-  counterSlice.reducer
-);
-//===============================useSelector
-export const getContactsValue = state => state.phoneBook.contacts.items;
-export const getFilterValue = state => state.phoneBook.contacts.filter;
+export const { getValue } = counterSlice.actions;

@@ -1,10 +1,18 @@
 import { ContactListItem } from './ContactListItem';
-import { useSelector } from 'react-redux';
-import { getContactsValue, getFilterValue } from 'redux/contactsSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectContacts, selectFilter } from 'redux/selectors';
+
+import { fetchContacts } from 'redux/operations';
+import { useEffect } from 'react';
 
 export function ContactList() {
-  const contacts = useSelector(getContactsValue);
-  const filterValue = useSelector(getFilterValue);
+  const contacts = useSelector(selectContacts);
+  const filterValue = useSelector(selectFilter);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const filter = contacts.filter(contact =>
     contact.name.toLowerCase().includes(filterValue.toLowerCase())
